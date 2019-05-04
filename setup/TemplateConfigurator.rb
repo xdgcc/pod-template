@@ -121,7 +121,7 @@ module Pod
     end
 
     def clean_template_files
-      ["./**/.gitkeep", "configure", "_CONFIGURE.rb", "README.md", "LICENSE", "templates", "setup", "CODE_OF_CONDUCT.md"].each do |asset|
+      ["./**/.gitkeep", "configure", "user_config.json", "_CONFIGURE.rb", "README.md", "LICENSE", "templates", "setup", "CODE_OF_CONDUCT.md"].each do |asset|
         `rm -rf #{asset}`
       end
     end
@@ -239,8 +239,8 @@ module Pod
 
     def get_user_info_config
       config_json = File.read('user_config.json')
-      obj = JSON.parse(json)
-      return obj
+      config = JSON.parse(config_json)
+      return config
     end
 
     #----------------------------------------#
