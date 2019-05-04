@@ -1,5 +1,7 @@
 require 'fileutils'
 require 'colored2'
+require 'rubygems'
+require 'json'
 
 module Pod
   class TemplateConfigurator
@@ -70,21 +72,22 @@ module Pod
     def run
       @message_bank.welcome_message
 
-      platform = self.ask_with_answers("What platform do you want to use?", ["iOS", "macOS"]).to_sym
+      #platform = self.ask_with_answers("What platform do you want to use?", ["iOS", "macOS"]).to_sym
+      # case platform
+      #   when :macos
+      #     ConfigureMacOSSwift.perform(configurator: self)
+      #   when :ios
+      #     framework = self.ask_with_answers("What language do you want to use?", ["Swift", "ObjC"]).to_sym
+      #     case framework
+      #       when :swift
+      #         ConfigureSwift.perform(configurator: self)
+      #
+      #       when :objc
+      #         ConfigureIOS.perform(configurator: self)
+      #     end
+      # end
 
-      case platform
-        when :macos
-          ConfigureMacOSSwift.perform(configurator: self)
-        when :ios
-          framework = self.ask_with_answers("What language do you want to use?", ["Swift", "ObjC"]).to_sym
-          case framework
-            when :swift
-              ConfigureSwift.perform(configurator: self)
-
-            when :objc
-              ConfigureIOS.perform(configurator: self)
-          end
-      end
+      ConfigureIOS.perform(configurator: self)
 
       replace_variables_in_files
       clean_template_files
@@ -130,6 +133,7 @@ module Pod
         text.gsub!("${POD_NAME}", @pod_name)
         text.gsub!("${REPO_NAME}", @pod_name.gsub('+', '-'))
         text.gsub!("${USER_NAME}", user_name)
+        text.gsub!("${USER_COMPANY}", user_compnay)
         text.gsub!("${USER_EMAIL}", user_email)
         text.gsub!("${YEAR}", year)
         text.gsub!("${DATE}", date)
@@ -194,17 +198,30 @@ module Pod
     #----------------------------------------#
 
     def user_name
-      (ENV['GIT_COMMITTER_NAME'] || github_user_name || `git config user.name` || `<GITHUB_USERNAME>` ).strip
+      user_info_config = get_user_info_config
+      return user_info_config['user_name']
+      #(ENV['GIT_COMMITTER_NAME'] || github_user_name || `git config user.name` || `<GITHUB_USERNAME>` ).strip
     end
 
     def github_user_name
-      github_user_name = `security find-internet-password -s github.com | grep acct | sed 's/"acct"<blob>="//g' | sed 's/"//g'`.strip
-      is_valid = github_user_name.empty? or github_user_name.include? '@'
-      return is_valid ? nil : github_user_name
+      user_info_config = get_user_info_config
+      return user_info_config['github_user_name']
+      #(ENV[`git config user.name`).strip
+      # github_user_name = `security find-internet-password -s github.com | grep acct | sed 's/"acct"<blob>="//g' | sed 's/"//g'`.strip
+      # is_valid = github_user_name.empty? or github_user_name.include? '@'
+      # return is_valid ? nil : github_user_name
     end
 
     def user_email
-      (ENV['GIT_COMMITTER_EMAIL'] || `git config user.email`).strip
+      user_info_config = get_user_info_config
+      return user_info_config['user_email']
+      #(ENV['GIT_COMMITTER_EMAIL'] || `git config user.email`).strip
+    end
+
+    def user_compnay
+      user_info_config = get_user_info_config
+      return user_info_config['user_compnay']
+      #(ENV[`git config user.compnay`).strip
     end
 
     def year
@@ -217,6 +234,13 @@ module Pod
 
     def podfile_path
       'Example/Podfile'
+    end
+
+
+    def get_user_info_config
+        config_json = File.read('user_config.json')
+        obj = JSON.parse(json)
+        return obj
     end
 
     #----------------------------------------#

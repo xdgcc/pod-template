@@ -20,6 +20,7 @@ module Pod
     def run
       @string_replacements = {
         "PROJECT_OWNER" => @configurator.user_name,
+        "PROJECT_OWNER_COMPANY" => @configurator.user_compnay,
         "TODAYS_DATE" => @configurator.date,
         "TODAYS_YEAR" => @configurator.year,
         "PROJECT" => @configurator.pod_name,
