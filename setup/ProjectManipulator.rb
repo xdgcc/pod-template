@@ -20,7 +20,7 @@ module Pod
     def run
       @string_replacements = {
         "PROJECT_OWNER" => @configurator.user_name,
-        "PROJECT_OWNER_COMPANY" => @configurator.user_compnay,
+        "PROJECT_COMPANY" => @configurator.user_compnay,
         "TODAYS_DATE" => @configurator.date,
         "TODAYS_YEAR" => @configurator.year,
         "PROJECT" => @configurator.pod_name,
@@ -77,7 +77,7 @@ module Pod
 use_frameworks!
 target '#{test_target.name}' do
   pod '#{@configurator.pod_name}', :path => '../'
-  
+
   ${INCLUDED_PODS}
 end
 RUBY
