@@ -238,9 +238,9 @@ module Pod
 
 
     def get_user_info_config
-        config_json = File.read('user_config.json')
-        obj = JSON.parse(json)
-        return obj
+      config_json = File.read('user_config.json')
+      obj = JSON.parse(json)
+      return obj
     end
 
     #----------------------------------------#
